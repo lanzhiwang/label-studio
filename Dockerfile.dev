@@ -1,0 +1,43 @@
+FROM heartexlabs/label-studio:1.7.0 AS frontend-builder
+
+FROM python:3.9.18
+
+ENV PYTHONUNBUFFERED=0
+
+WORKDIR /label-studio/
+
+COPY ./deploy/requirements-test.txt /label-studio/requirements-test.txt
+COPY ./deploy/requirements.txt /label-studio/requirements.txt
+
+RUN pip install black -i https://pypi.tuna.tsinghua.edu.cn/simple && \
+    pip install -r /label-studio/requirements-test.txt -i https://pypi.tuna.tsinghua.edu.cn/simple && \
+    pip install -r /label-studio/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+COPY . /label-studio/
+
+RUN rm -rf ./label_studio/frontend
+
+COPY --from=frontend-builder /label-studio/label_studio/frontend/dist /label-studio/label_studio/frontend/dist
+COPY --from=frontend-builder /label-studio/label_studio/core/static_build /label-studio/label_studio/core/static_build
+
+RUN pip install -e . && \
+    DJANGO_DB=sqlite LOG_DIR=tmp DEBUG=true LOG_LEVEL=DEBUG DJANGO_SETTINGS_MODULE=core.settings.label_studio python label_studio/manage.py migrate
+
+EXPOSE 8000
+
+ENV DJANGO_DB=sqlite
+ENV DEBUG=true
+ENV LOG_LEVEL=DEBUG
+ENV DJANGO_SETTINGS_MODULE=core.settings.label_studio
+
+CMD ["python", "label_studio/manage.py", "runserver", "0.0.0.0:8000"]
+
+# docker build -t label_studio_dev:v8 -f Dockerfile.dev .
+
+# docker run --name some-label-studio -p 8000:8000 -d label_studio_dev:v8
+
+# docker run --name some-label-studio -p 8000:8000 -v ~/work/code/go_code/ai/HumanSignal/label-studio/data/label_studio.sqlite3:/root/.local/share/label-studio/label_studio.sqlite3 -d label_studio_dev:v8
+
+# docker run --name some-label-studio -p 8000:8000 -v ~/work/code/go_code/ai/HumanSignal/label-studio/data:/root/.local/share/label-studio -d label_studio_dev:v8
+
+# docker run -ti --rm -v /Users/huzhi/work/code/go_code/ai/HumanSignal/label-studio:/label-studio python:3.9.18 bash

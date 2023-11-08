@@ -4,6 +4,7 @@
 # Except:
 !deploy/docker-entrypoint.d/**
 !deploy/docker-entrypoint.sh
+!deploy/requirements-test.txt
 !deploy/requirements-mw.txt
 !deploy/requirements.txt
 !deploy/heroku_run.sh

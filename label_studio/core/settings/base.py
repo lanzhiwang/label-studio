@@ -9,6 +9,32 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+
+"""
+root@1694d4615b58:/label-studio/label_studio# env
+PYTHONUNBUFFERED=0
+LOG_LEVEL=DEBUG
+HOSTNAME=1694d4615b58
+PYTHON_VERSION=3.9.18
+PWD=/label-studio/label_studio
+PYTHON_SETUPTOOLS_VERSION=58.1.0
+HOME=/root
+LANG=C.UTF-8
+GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568
+DJANGO_SETTINGS_MODULE=core.settings.label_studio
+TERM=xterm
+SHLVL=1
+DJANGO_DB=sqlite
+PYTHON_PIP_VERSION=23.0.1
+PYTHON_GET_PIP_SHA256=45a2bb8bf2bb5eff16fdd00faef6f29731831c7c59bd9fc2bf1f3bed511ff1fe
+PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/9af82b715db434abb94a0a6f3569f43e72157346/public/get-pip.py
+PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+DEBUG=true
+_=/usr/bin/env
+OLDPWD=/label-studio
+root@1694d4615b58:/label-studio/label_studio#
+"""
+
 import os
 import re
 import logging
@@ -18,9 +44,11 @@ from datetime import timedelta
 from label_studio.core.utils.params import get_bool_env, get_env
 
 formatter = 'standard'
-JSON_LOG = get_bool_env('JSON_LOG', False)
+JSON_LOG = get_bool_env('JSON_LOG', False)  # False
 if JSON_LOG:
     formatter = 'json'
+# >>> settings.base.formatter
+# 'standard'
 
 LOGGING = {
     'version': 1,
@@ -65,6 +93,40 @@ LOGGING = {
         },
     },
 }
+# {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'json': {
+#             '()': 'label_studio.core.utils.formatter.CustomJsonFormatter',
+#             'format': '[%(asctime)s] [%(name)s::%(funcName)s::%(lineno)d] [%(levelname)s] [%(user_id)s] %(message)s',
+#             'datefmt': '%d/%b/%Y:%H:%M:%S %z'
+#         },
+#         'standard': {
+#             'format': '[%(asctime)s] [%(name)s::%(funcName)s::%(lineno)d] [%(levelname)s] %(message)s'
+#         }
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'standard'
+#         }
+#     },
+#     'root': {
+#         'handlers': ['console'],
+#         'level': 'DEBUG'
+#     },
+#     'loggers': {
+#         'pykwalify': {'level': 'ERROR', 'propagate': False},
+#         'tavern': {'level': 'ERROR', 'propagate': False},
+#         'asyncio': {'level': 'WARNING'},
+#         'rules': {'level': 'WARNING'},
+#         'django': {'handlers': ['console']},
+#         'django_auth_ldap': {'level': 'DEBUG'},
+#         'rq.worker': {'handlers': ['console'], 'level': 'DEBUG'},
+#         'ddtrace': {'handlers': ['console'], 'level': 'WARNING'}
+#     }
+# }
 
 
 # for printing messages before main logging config applied
@@ -79,6 +141,9 @@ SILENCED_SYSTEM_CHECKS = []
 
 # Hostname is used for proper path generation to the resources, pages, etc
 HOSTNAME = get_env('HOST', '')
+# >>> settings.base.HOSTNAME
+# ''
+
 if HOSTNAME:
     if not HOSTNAME.startswith('http://') and not HOSTNAME.startswith('https://'):
         logger.info(
@@ -106,14 +171,21 @@ SECRET_KEY = '$(fefwefwef13;LFK{P!)@#*!)kdsjfWF2l+i5e3t(8a1n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_bool_env('DEBUG', True)
-DEBUG_MODAL_EXCEPTIONS = get_bool_env('DEBUG_MODAL_EXCEPTIONS', True)
+# >>> settings.base.DEBUG
+# True
 
+DEBUG_MODAL_EXCEPTIONS = get_bool_env('DEBUG_MODAL_EXCEPTIONS', True)
+# >>> settings.base.DEBUG_MODAL_EXCEPTIONS
+# True
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# /label-studio/label_studio/core
 
 # Base path for media root and other uploaded files
 BASE_DATA_DIR = get_env('BASE_DATA_DIR', get_data_dir())
+# /root/.local/share/label-studio
+
 os.makedirs(BASE_DATA_DIR, exist_ok=True)
 logger.info('=> Database and media directory: %s', BASE_DATA_DIR)
 
@@ -124,7 +196,11 @@ DJANGO_DB_SQLITE = 'sqlite'
 DJANGO_DB_POSTGRESQL = 'postgresql'
 DJANGO_DB = 'default'
 DATABASE_NAME_DEFAULT = os.path.join(BASE_DATA_DIR, 'label_studio.sqlite3')
+# /root/.local/share/label-studio/label_studio.sqlite3
+
 DATABASE_NAME = get_env('DATABASE_NAME', DATABASE_NAME_DEFAULT)
+# /root/.local/share/label-studio/label_studio.sqlite3
+
 DATABASES_ALL = {
     DJANGO_DB_POSTGRESQL: {
         'ENGINE': 'django.db.backends.postgresql',
@@ -151,7 +227,77 @@ DATABASES_ALL = {
     },
 }
 DATABASES_ALL['default'] = DATABASES_ALL[DJANGO_DB_POSTGRESQL]
+# {
+#     'postgresql': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'USER': 'postgres',
+#         'PASSWORD': 'postgres',
+#         'NAME': 'postgres',
+#         'HOST': 'localhost',
+#         'PORT': 5432
+#     },
+#     'mysql': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'USER': 'root',
+#         'PASSWORD': '',
+#         'NAME': 'labelstudio',
+#         'HOST': 'localhost',
+#         'PORT': 3306
+#     },
+#     'sqlite': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': '/root/.local/share/label-studio/label_studio.sqlite3',
+#         'OPTIONS': {},
+#         'ATOMIC_REQUESTS': False,
+#         'AUTOCOMMIT': True,
+#         'CONN_MAX_AGE': 0,
+#         'TIME_ZONE': None,
+#         'USER': '',
+#         'PASSWORD': '',
+#         'HOST': '',
+#         'PORT': '',
+#         'TEST': {
+#             'CHARSET': None,
+#             'COLLATION': None,
+#             'MIGRATE': True,
+#             'MIRROR': None,
+#             'NAME': None
+#         }
+#     },
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'USER': 'postgres',
+#         'PASSWORD': 'postgres',
+#         'NAME': 'postgres',
+#         'HOST': 'localhost',
+#         'PORT': 5432
+#     }
+# }
+
+
 DATABASES = {'default': DATABASES_ALL.get(get_env('DJANGO_DB', 'default'))}
+# {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': '/root/.local/share/label-studio/label_studio.sqlite3',
+#         'OPTIONS': {},
+#         'ATOMIC_REQUESTS': False,
+#         'AUTOCOMMIT': True,
+#         'CONN_MAX_AGE': 0,
+#         'TIME_ZONE': None,
+#         'USER': '',
+#         'PASSWORD': '',
+#         'HOST': '',
+#         'PORT': '',
+#         'TEST': {
+#             'CHARSET': None,
+#             'COLLATION': None,
+#             'MIGRATE': True,
+#             'MIRROR': None,
+#             'NAME': None
+#         }
+#     }
+# }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -243,6 +389,7 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination'
 }
 SILENCED_SYSTEM_CHECKS += ["rest_framework.W001"]
+# ['rest_framework.W001']
 
 # CORS & Host settings
 INTERNAL_IPS = [  # django debug toolbar for django==2.2 requirement
@@ -278,6 +425,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Django templates
 TEMPLATES_DIR = os.path.join(os.path.dirname(BASE_DIR), 'templates')  # ../../from_this = 'web' dir
+# /label-studio/label_studio/templates
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -295,6 +444,24 @@ TEMPLATES = [
         },
     }
 ]
+# [
+#     {
+#         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+#         'DIRS': ['/label-studio/label_studio/templates'],
+#         'APP_DIRS': True,
+#         'OPTIONS': {
+#             'context_processors': [
+#                 'django.template.context_processors.debug',
+#                 'django.template.context_processors.request',
+#                 'django.contrib.auth.context_processors.auth',
+#                 'django.contrib.messages.context_processors.messages',
+#                 'core.context_processors.settings'
+#             ],
+#             'builtins': ['django.templatetags.i18n']
+#         }
+#     }
+# ]
+
 
 # RQ
 RQ_QUEUES = {
@@ -345,13 +512,13 @@ SWAGGER_SETTINGS = {
 
 }
 
-SENTRY_DSN = get_env('SENTRY_DSN', None)
-SENTRY_RATE = float(get_env('SENTRY_RATE', 0.25))
-SENTRY_ENVIRONMENT = get_env('SENTRY_ENVIRONMENT', 'stage.opensource')
+SENTRY_DSN = get_env('SENTRY_DSN', None)  # None
+SENTRY_RATE = float(get_env('SENTRY_RATE', 0.25))  # 0.25
+SENTRY_ENVIRONMENT = get_env('SENTRY_ENVIRONMENT', 'stage.opensource')  # stage.opensource
 SENTRY_REDIS_ENABLED = False
-FRONTEND_SENTRY_DSN = get_env('FRONTEND_SENTRY_DSN', None)
-FRONTEND_SENTRY_RATE = get_env('FRONTEND_SENTRY_RATE', 0.1)
-FRONTEND_SENTRY_ENVIRONMENT = get_env('FRONTEND_SENTRY_ENVIRONMENT', 'stage.opensource')
+FRONTEND_SENTRY_DSN = get_env('FRONTEND_SENTRY_DSN', None)  # None
+FRONTEND_SENTRY_RATE = get_env('FRONTEND_SENTRY_RATE', 0.1)  # 0.1
+FRONTEND_SENTRY_ENVIRONMENT = get_env('FRONTEND_SENTRY_ENVIRONMENT', 'stage.opensource')  # stage.opensource
 
 ROOT_URLCONF = 'core.urls'
 WSGI_APPLICATION = 'core.wsgi.application'
@@ -373,7 +540,11 @@ STATIC_URL = '/static/'
 logger.info(f'=> Static URL is set to: {STATIC_URL}')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
+# /label-studio/label_studio/core/static_build
+
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# ['/label-studio/label_studio/core/static']
+
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -381,21 +552,22 @@ STATICFILES_FINDERS = (
 STATICFILES_STORAGE = 'core.storage.SkipMissedManifestStaticFilesStorage'
 
 # Sessions and CSRF
-SESSION_COOKIE_SECURE = bool(int(get_env('SESSION_COOKIE_SECURE', False)))
-CSRF_COOKIE_SECURE = bool(int(get_env('CSRF_COOKIE_SECURE', SESSION_COOKIE_SECURE)))
-CSRF_COOKIE_HTTPONLY = bool(int(get_env('CSRF_COOKIE_HTTPONLY', SESSION_COOKIE_SECURE)))
+SESSION_COOKIE_SECURE = bool(int(get_env('SESSION_COOKIE_SECURE', False)))  # False
+CSRF_COOKIE_SECURE = bool(int(get_env('CSRF_COOKIE_SECURE', SESSION_COOKIE_SECURE)))  # False
+CSRF_COOKIE_HTTPONLY = bool(int(get_env('CSRF_COOKIE_HTTPONLY', SESSION_COOKIE_SECURE)))  # False
 
 # Inactivity user sessions
-INACTIVITY_SESSION_TIMEOUT_ENABLED = bool(int(get_env('INACTIVITY_SESSION_TIMEOUT_ENABLED', True)))
+INACTIVITY_SESSION_TIMEOUT_ENABLED = bool(int(get_env('INACTIVITY_SESSION_TIMEOUT_ENABLED', True)))  # True
 # The most time a login will last, regardless of activity
-MAX_SESSION_AGE = int(get_env('MAX_SESSION_AGE', timedelta(days=14).total_seconds()))
+MAX_SESSION_AGE = int(get_env('MAX_SESSION_AGE', timedelta(days=14).total_seconds()))  # 1209600
 # The most time that can elapse between activity with the server before the user is logged out
-MAX_TIME_BETWEEN_ACTIVITY = int(get_env('MAX_TIME_BETWEEN_ACTIVITY', timedelta(days=5).total_seconds()))
+MAX_TIME_BETWEEN_ACTIVITY = int(get_env('MAX_TIME_BETWEEN_ACTIVITY', timedelta(days=5).total_seconds()))  # 432000
 
-SSRF_PROTECTION_ENABLED = get_bool_env('SSRF_PROTECTION_ENABLED', False)
+SSRF_PROTECTION_ENABLED = get_bool_env('SSRF_PROTECTION_ENABLED', False)  # False
 
 # user media files
 MEDIA_ROOT = os.path.join(BASE_DATA_DIR, 'media')
+# /root/.local/share/label-studio/media
 os.makedirs(MEDIA_ROOT, exist_ok=True)
 MEDIA_URL = '/data/'
 UPLOAD_DIR = 'upload'
@@ -403,6 +575,7 @@ AVATAR_PATH = 'avatars'
 
 # project exports
 EXPORT_DIR = os.path.join(BASE_DATA_DIR, 'export')
+# /root/.local/share/label-studio/export
 EXPORT_URL_ROOT = '/export/'
 EXPORT_MIXIN = 'data_export.mixins.ExportMixin'
 # old export dir
@@ -412,13 +585,13 @@ DELAYED_EXPORT_DIR = 'export'
 os.makedirs(os.path.join(BASE_DATA_DIR, MEDIA_ROOT, DELAYED_EXPORT_DIR), exist_ok=True)
 
 # file / task size limits
-DATA_UPLOAD_MAX_MEMORY_SIZE = int(get_env('DATA_UPLOAD_MAX_MEMORY_SIZE', 250 * 1024 * 1024))
+DATA_UPLOAD_MAX_MEMORY_SIZE = int(get_env('DATA_UPLOAD_MAX_MEMORY_SIZE', 250 * 1024 * 1024))  # 262144000
 TASKS_MAX_NUMBER = 1000000
 TASKS_MAX_FILE_SIZE = DATA_UPLOAD_MAX_MEMORY_SIZE
 
-TASK_LOCK_TTL = int(get_env('TASK_LOCK_TTL')) if get_env('TASK_LOCK_TTL') else None
-TASK_LOCK_DEFAULT_TTL = int(get_env('TASK_LOCK_DEFAULT_TTL', 3600))
-TASK_LOCK_MIN_TTL = int(get_env('TASK_LOCK_MIN_TTL', 120))
+TASK_LOCK_TTL = int(get_env('TASK_LOCK_TTL')) if get_env('TASK_LOCK_TTL') else None  # None
+TASK_LOCK_DEFAULT_TTL = int(get_env('TASK_LOCK_DEFAULT_TTL', 3600))  # 3600
+TASK_LOCK_MIN_TTL = int(get_env('TASK_LOCK_MIN_TTL', 120))  # 120
 
 RANDOM_NEXT_TASK_SAMPLE_SIZE = int(get_env('RANDOM_NEXT_TASK_SAMPLE_SIZE', 50))
 
@@ -430,7 +603,7 @@ EMAIL_BACKEND = get_env('EMAIL_BACKEND', 'django.core.mail.backends.dummy.EmailB
 
 ENABLE_LOCAL_FILES_STORAGE = get_bool_env('ENABLE_LOCAL_FILES_STORAGE', default=True)
 LOCAL_FILES_SERVING_ENABLED = get_bool_env('LOCAL_FILES_SERVING_ENABLED', default=False)
-LOCAL_FILES_DOCUMENT_ROOT = get_env('LOCAL_FILES_DOCUMENT_ROOT', default=os.path.abspath(os.sep))
+LOCAL_FILES_DOCUMENT_ROOT = get_env('LOCAL_FILES_DOCUMENT_ROOT', default=os.path.abspath(os.sep))  # '/'
 
 SYNC_ON_TARGET_STORAGE_CREATION = get_bool_env('SYNC_ON_TARGET_STORAGE_CREATION', default=True)
 
@@ -439,10 +612,15 @@ ALLOW_IMPORT_TASKS_WITH_UNKNOWN_EMAILS = get_bool_env('ALLOW_IMPORT_TASKS_WITH_U
 """ React Libraries: do not forget to change this dir in /etc/nginx/nginx.conf """
 # EDITOR = label-studio-frontend repository
 EDITOR_ROOT = os.path.join(BASE_DIR, '../frontend/dist/lsf')
+# /label-studio/label_studio/core/../frontend/dist/lsf
+
 # DM = data manager (included into FRONTEND due npm building, we need only version.json file from there)
 DM_ROOT = os.path.join(BASE_DIR, '../frontend/dist/dm')
+# /label-studio/label_studio/core/../frontend/dist/dm
+
 # FRONTEND = GUI for django backend
 REACT_APP_ROOT = os.path.join(BASE_DIR, '../frontend/dist/react-app')
+# /label-studio/label_studio/core/../frontend/dist/react-app
 
 # per project settings
 BATCH_SIZE = 1000
@@ -512,7 +690,7 @@ PROJECT_DELETE = project_delete
 USER_AUTH = user_auth
 COLLECT_VERSIONS = collect_versions_dummy
 
-WEBHOOK_TIMEOUT = float(get_env('WEBHOOK_TIMEOUT', 1.0))
+WEBHOOK_TIMEOUT = float(get_env('WEBHOOK_TIMEOUT', 1.0))  # 1.0
 WEBHOOK_SERIALIZERS = {
     'project': 'webhooks.serializers_for_hooks.ProjectWebhookSerializer',
     'task': 'webhooks.serializers_for_hooks.TaskWebhookSerializer',
@@ -521,7 +699,7 @@ WEBHOOK_SERIALIZERS = {
     'label_link': 'labels_manager.serializers.LabelLinkSerializer',
 }
 
-EDITOR_KEYMAP = json.dumps(get_env("EDITOR_KEYMAP"))
+EDITOR_KEYMAP = json.dumps(get_env("EDITOR_KEYMAP"))  # 'null'
 
 # fix a problem with Windows mimetypes for JS and PNG
 import mimetypes

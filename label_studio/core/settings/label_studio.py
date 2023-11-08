@@ -5,17 +5,61 @@ import pathlib
 
 from core.settings.base import *
 
-DJANGO_DB = get_env('DJANGO_DB', DJANGO_DB_SQLITE)
+DJANGO_DB = get_env('DJANGO_DB', DJANGO_DB_SQLITE)  # sqlite
 DATABASES = {'default': DATABASES_ALL[DJANGO_DB]}
+# {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': '/root/.local/share/label-studio/label_studio.sqlite3',
+#         'OPTIONS': {},
+#         'ATOMIC_REQUESTS': False,
+#         'AUTOCOMMIT': True,
+#         'CONN_MAX_AGE': 0,
+#         'TIME_ZONE': None,
+#         'USER': '',
+#         'PASSWORD': '',
+#         'HOST': '',
+#         'PORT': '',
+#         'TEST': {
+#             'CHARSET': None,
+#             'COLLATION': None,
+#             'MIGRATE': True,
+#             'MIRROR': None,
+#             'NAME': None
+#         }
+#     }
+# }
 
 MIDDLEWARE.append('organizations.middleware.DummyGetSessionMiddleware')
 MIDDLEWARE.append('core.middleware.UpdateLastActivityMiddleware')
 if INACTIVITY_SESSION_TIMEOUT_ENABLED:
     MIDDLEWARE.append('core.middleware.InactivitySessionTimeoutMiddleWare')
+# [
+#     'corsheaders.middleware.CorsMiddleware',
+#     'django.middleware.security.SecurityMiddleware',
+#     'django.contrib.sessions.middleware.SessionMiddleware',
+#     'django.middleware.locale.LocaleMiddleware',
+#     'core.middleware.DisableCSRF',
+#     'django.middleware.csrf.CsrfViewMiddleware',
+#     'django.contrib.auth.middleware.AuthenticationMiddleware',
+#     'django.contrib.messages.middleware.MessageMiddleware',
+#     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+#     'core.middleware.CommonMiddlewareAppendSlashWithoutRedirect',
+#     'core.middleware.CommonMiddleware',
+#     'django_user_agents.middleware.UserAgentMiddleware',
+#     'core.middleware.SetSessionUIDMiddleware',
+#     'core.middleware.ContextLogMiddleware',
+#     'core.middleware.DatabaseIsLockedRetryMiddleware',
+#     'core.current_request.ThreadLocalMiddleware',
+#     'organizations.middleware.DummyGetSessionMiddleware',
+#     'core.middleware.UpdateLastActivityMiddleware',
+#     'core.middleware.InactivitySessionTimeoutMiddleWare'
+# ]
 
 ADD_DEFAULT_ML_BACKENDS = False
 
 LOGGING['root']['level'] = get_env('LOG_LEVEL', 'WARNING')
+# DEBUG
 
 DEBUG = get_bool_env('DEBUG', False)
 
@@ -31,14 +75,19 @@ SENTRY_DSN = get_env(
     'SENTRY_DSN',
     'https://68b045ab408a4d32a910d339be8591a4@o227124.ingest.sentry.io/5820521'
 )
+# https://68b045ab408a4d32a910d339be8591a4@o227124.ingest.sentry.io/5820521
+
 SENTRY_ENVIRONMENT = get_env('SENTRY_ENVIRONMENT', 'opensource')
+# opensource
 
 FRONTEND_SENTRY_DSN = get_env(
     'FRONTEND_SENTRY_DSN',
     'https://5f51920ff82a4675a495870244869c6b@o227124.ingest.sentry.io/5838868')
+# https://5f51920ff82a4675a495870244869c6b@o227124.ingest.sentry.io/5838868
+
 FRONTEND_SENTRY_ENVIRONMENT = get_env('FRONTEND_SENTRY_ENVIRONMENT', 'opensource')
 
-EDITOR_KEYMAP = json.dumps(get_env("EDITOR_KEYMAP"))
+EDITOR_KEYMAP = json.dumps(get_env("EDITOR_KEYMAP"))  # 'null'
 
 from label_studio import __version__
 from label_studio.core.utils import sentry
@@ -47,6 +96,30 @@ sentry.init_sentry(release_name='label-studio', release_version=__version__)
 # we should do it after sentry init
 from label_studio.core.utils.common import collect_versions
 versions = collect_versions()
+# {
+#     'release': '1.7.0.post0',
+#     'label-studio-os-package': {
+#         'version': '1.7.0.post0',
+#         'short_version': '1.7',
+#         'latest_version_from_pypi': '1.9.0',
+#         'latest_version_upload_time': '2023-09-27T23:50:03',
+#         'current_version_is_outdated': True
+#     },
+#     'label-studio-os-backend': {},
+#     'label-studio-frontend': {
+#         'message': 'fix: DEV-3917: Revert #1043 (#1088)',
+#         'commit': '63855c94bb9df6529781ee84254dad825f3f3db6',
+#         'branch': 'ls-release/1.7.0',
+#         'date': '2022/12/15 08:30:21'
+#     },
+#     'dm2': {
+#         'message': 'fix: DEV-3917: Reinit history after draft applied (#135)',
+#         'commit': '7318de4131ccdc4c92bea8f521467c33f7c63c8e',
+#         'branch': 'ls-release/1.7.0',
+#         'date': '2022/12/15 08:30:09'
+#     },
+#     'label-studio-converter': {'version': '0.0.48rc0'}
+# }
 
 # in Label Studio Community version, feature flags are always ON
 FEATURE_FLAGS_DEFAULT_VALUE = True
@@ -61,5 +134,7 @@ try:
     find_node('label_studio', FEATURE_FLAGS_FILE, 'file')
 except IOError:
     FEATURE_FLAGS_FROM_FILE = False
+# >>> settings.label_studio.FEATURE_FLAGS_FROM_FILE
+# True
 
 STORAGE_PERSISTENCE = get_bool_env('STORAGE_PERSISTENCE', True)
