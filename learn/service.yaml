@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: label-studio
+  namespace: infra
+spec:
+  ports:
+    - protocol: TCP
+      port: 18088
+      targetPort: 18088
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: label-studio
+  namespace: infra
+subsets:
+  - addresses:
+      - ip: 172.16.10.55
+    ports:
+      - port: 18088
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: infra-taichu-web-svc
+  namespace: infra
+spec:
+  gateways:
+  - kubeflow/kubeflow-gateway
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /guard/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: checksensitive-poc-svc.infra.svc.cluster.local
+        port:
+          number: 8080
+  - match:
+    - uri:
+        prefix: /checksensitive/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: checksensitive-svc.infra.svc.cluster.local
+        port:
+          number: 8080
+  - match:
+    - uri:
+        prefix: /annotations
+    route:
+    - destination:
+        host: taichu-annotation-web-svc.infra.svc.cluster.local
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /taichu-web
+    route:
+    - destination:
+        host: taichu-web-svc.infra.svc.cluster.local
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /taichu
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: taichu-web-svc.infra.svc.cluster.local
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /infer_96
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: serving-instance-96-1f27a283.service.svc.cluster.local
+        port:
+          number: 8080
+  - match:
+    - uri:
+        prefix: /vangogh
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: taichu-vangogh-svc.infra.svc.cluster.local
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /casdoor/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: casdoor.infra.svc.cluster.local
+        port:
+          number: 8000
+  - match:
+    - uri:
+        prefix: /ssoApi/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: casdoor.infra.svc.cluster.local
+        port:
+          number: 8000
+  - match:
+    - uri:
+        prefix: /api/get-auth-code
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: casdoor.infra.svc.cluster.local
+        port:
+          number: 8000
+  - match:
+    - uri:
+        prefix: /label-studio
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: label-studio.infra.svc.cluster.local
+        port:
+          number: 18088
+  - route:
+    - destination:
+        host: kubeflow-dashboard-frontend.infra.svc.cluster.local
+        port:
+          number: 80
+      headers:
+        request:
+          set:
+            t-source: external
+        response:
+          add:
+            x_request_id: '%REQ(X-REQUEST-ID)%'

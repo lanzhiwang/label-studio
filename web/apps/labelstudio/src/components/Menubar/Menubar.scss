@@ -60,8 +60,9 @@
 
   &__logo {
     color: var(--color-neutral-content);
-    height: 22px;
-    width: 142px;
+    width: 170px;
+    height: 46px;
+    object-fit:cover;
   }
 
   &__user {

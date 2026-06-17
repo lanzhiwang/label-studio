@@ -12,7 +12,7 @@ import {
   IconSettings,
   IconSlack,
 } from "@humansignal/icons";
-import { LSLogo } from "../../assets/images";
+import { LSLogo, logopng } from "../../assets/images";
 import { Userpic, ThemeToggle } from "@humansignal/ui";
 import { useConfig } from "../../providers/ConfigProvider";
 import { useContextComponent, useFixedLocation } from "../../providers/RoutesProvider";
@@ -137,7 +137,8 @@ export const Menubar = ({ enabled, defaultOpened, defaultPinned, children, onSid
         <div className={menubarClass}>
           <Dropdown.Trigger dropdown={menuDropdownRef} closeOnClickOutside={!sidebarPinned}>
             <div className={`${menubarClass.elem("trigger")} main-menu-trigger`}>
-              <LSLogo className={`${menubarClass.elem("logo")}`} alt="Label Studio Logo" />
+              {/* <LSLogo className={`${menubarClass.elem("logo")}`} alt="Label Studio Logo" /> */}
+            <img src={logopng} className={`${menubarClass.elem("logo")}`} alt="Label Studio Logo" />
               <Hamburger opened={sidebarOpened} />
             </div>
           </Dropdown.Trigger>
